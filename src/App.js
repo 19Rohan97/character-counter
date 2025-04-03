@@ -68,8 +68,8 @@ export default function App() {
       className="w-full min-h-screen pt-6 pb-16 px-3 bg-neutral-100 dark:bg-neutral-900"
       style={{
         backgroundImage: dark
-          ? "url('/assets/images/bg-dark-theme.png')"
-          : "url('/assets/images/bg-light-theme.png')",
+          ? `url('${process.env.PUBLIC_URL}/assets/images/bg-dark-theme.png')`
+          : `url('${process.env.PUBLIC_URL}/assets/images/bg-light-theme.png')`,
       }}
     >
       <Header dark={dark} onDarkMode={handleDarkMode} />

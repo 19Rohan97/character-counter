@@ -3,7 +3,7 @@ export function Card({ children, bgColor, bgImage }) {
     <div
       className={`w-full ${bgColor} rounded-lg px-4 py-6 bg-right bg-auto bg-no-repeat`}
       style={{
-        backgroundImage: `url(/assets/images/${bgImage})`,
+        backgroundImage: `url(${process.env.PUBLIC_URL}/assets/images/${bgImage})`,
       }}
     >
       {children}
