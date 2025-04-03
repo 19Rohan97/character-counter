@@ -11,6 +11,7 @@ export default function App() {
   const [excludeSpaces, setExcludeSpaces] = useState(false);
   const [charLimitCheck, setCharLimitCheck] = useState(false);
   const [charLimit, setCharLimit] = useState(200);
+  const [density, setDensity] = useState({});
 
   const [readingTime, setReadingTime] = useState(0);
 
@@ -46,6 +47,35 @@ export default function App() {
 
     handleCharLimit();
   }, [charLimitCheck, charLimit, text]);
+
+  useEffect(() => {
+    if (!text.trim()) {
+      setDensity({});
+      return;
+    }
+
+    const cleanedStr = excludeSpaces ? text.replace(/\s/g, "") : text;
+    const totalChars = cleanedStr.length;
+    const charMap = {};
+
+    for (let char of cleanedStr) {
+      charMap[char] = (charMap[char] || 0) + 1;
+    }
+
+    const densityMap = {};
+    for (let char in charMap) {
+      densityMap[char] = {
+        count: charMap[char],
+        percentage: ((charMap[char] / totalChars) * 100).toFixed(2),
+      };
+    }
+
+    setDensity(densityMap);
+  }, [text, excludeSpaces]);
+
+  useEffect(() => {
+    console.log(density);
+  }, [density]);
 
   function handleDarkMode() {
     setDark((dark) => !dark);
@@ -147,6 +177,44 @@ export default function App() {
           <p className="text-preset-3">Sentence Count</p>
         </Card>
       </section>
+
+      <section className="max-w-990 mx-auto w-full mt-6 flex flex-col gap-3">
+        {Object.keys(density).length > 0 && (
+          <h2 className="text-preset-2 text-neutral-900 dark:text-neutral-200 mb-2">
+            Letter Density
+          </h2>
+        )}
+        {density &&
+          Object.entries(density)
+            .sort((a, b) => b[1].percentage - a[1].percentage)
+            .map(([char, { count, percentage }]) => (
+              <DensityCard
+                key={char}
+                char={char}
+                count={count}
+                percentage={percentage}
+              />
+            ))}
+      </section>
     </main>
+  );
+}
+
+function DensityCard({ char, count, percentage }) {
+  return (
+    <div className={`density-card flex justify-between items-center gap-4`}>
+      <span className="letter w-full max-w-[20px] text-neutral-900 dark:text-neutral-200 uppercase">
+        {char}
+      </span>
+      <div className="density-graph w-full h-[12px] bg-neutral-800 rounded-full relative overflow-hidden">
+        <div
+          className="absolute h-full bg-purple-400 rounded-full"
+          style={{ width: `${percentage}%` }}
+        ></div>
+      </div>
+      <span className="density w-full max-w-[100px] text-neutral-900 dark:text-neutral-200">
+        {count} ({percentage}%)
+      </span>
+    </div>
   );
 }
